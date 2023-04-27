@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\Technology;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -14,10 +15,10 @@ class ProjectController extends Controller
         return view('projects.index', ['projects' => $projects]);
     }
 
-
     public function create()
     {
-        return view('projects.create');
+        $technologies = Technology::all();
+        return view('projects.create', compact('technologies'));
     }
 
     public function store(Request $request)
@@ -35,6 +36,8 @@ class ProjectController extends Controller
         $project->slug = Str::slug($request->titolo);
         $project->save();
 
+        $project->technologies()->attach($request->input('technologies'));
+
         return redirect()->route('projects.index')->with('status', 'Project created successfully!');
     }
 
@@ -47,12 +50,12 @@ class ProjectController extends Controller
     public function edit($slug)
     {
         $project = Project::withTrashed()->where('slug', $slug)->firstOrFail();
-        return view('projects.edit', compact('project'));
+        $technologies = Technology::all();
+        return view('projects.edit', compact('project', 'technologies'));
     }
 
     public function update(Request $request, $slug)
     {
-
         $request->validate([
             'titolo' => 'required|max:255',
             'descrizione' => 'required',
@@ -63,8 +66,11 @@ class ProjectController extends Controller
         $project->slug = Str::slug($request->titolo);
         $project->save();
 
+        $project->technologies()->sync($request->input('technologies'));
+
         return redirect()->route('projects.show', $project->slug)->with('status', 'Project updated successfully!');
     }
+
 
     public function destroy($slug)
     {

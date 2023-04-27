@@ -23,6 +23,19 @@
                         <label for="url">URL</label>
                         <input type="text" name="url" id="url" class="form-control">
                     </div>
+                    <div class="form-group">
+                        <label for="technologies">Tecnologie:</label>
+                        <div class="checkbox-group">
+                            @foreach($technologies as $technology)
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="technologies[]" value="{{ $technology->id }}" id="technology{{ $technology->id }}">
+                                    <label class="form-check-label" for="technology{{ $technology->id }}">
+                                        {{ $technology->name }}
+                                    </label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
                     <button type="submit" class="btn btn-primary">Crea</button>
                 </form>
             </div>

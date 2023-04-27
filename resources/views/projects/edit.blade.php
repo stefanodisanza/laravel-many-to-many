@@ -23,6 +23,16 @@
                 <label for="url">URL</label>
                 <input type="text" name="url" class="form-control" value="{{ $project->url }}">
             </div>
+            @foreach($technologies as $technology)
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="technologies[]" value="{{ $technology->id }}" 
+                    {{ in_array($technology->id, $project->technologies->pluck('id')->toArray()) ? 'checked' : '' }}>
+                    {{ $technology->name }}
+                </label>
+            </div>
+            @endforeach
+
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Aggiorna</button>
             </div>
