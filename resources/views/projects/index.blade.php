@@ -32,8 +32,17 @@
                                         <form action="{{ route('projects.destroy', $project->slug) }}" method="POST" style="display: inline-block;">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Cancella</button>
+                                            <button type="button" class="btn btn-danger" onclick="confirmDelete(this.form)">Cancella</button>
                                         </form>
+                                        
+                                        <script>
+                                        function confirmDelete(form) {
+                                            if (confirm("Sei sicuro di voler cancellare questo progetto?")) {
+                                                form.submit();
+                                            }
+                                        }
+                                        </script>
+                                        
                                     </td>
                                 </tr>
                             @endforeach

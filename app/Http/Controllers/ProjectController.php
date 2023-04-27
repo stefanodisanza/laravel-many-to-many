@@ -10,9 +10,10 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::withTrashed()->orderBy('created_at', 'desc')->paginate(10);
-        return view('projects.index', compact('projects'));
+        $projects = Project::whereNull('deleted_at')->get();
+        return view('projects.index', ['projects' => $projects]);
     }
+
 
     public function create()
     {
@@ -22,14 +23,16 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
+            'titolo' => 'required|max:255',
+            'cliente' => 'required|max:255',
+            'descrizione' => 'required|max:255',
         ]);
 
         $project = new Project();
-        $project->title = $request->title;
-        $project->description = $request->description;
-        $project->slug = Str::slug($request->title);
+        $project->titolo = $request->titolo;
+        $project->cliente = $request->cliente;
+        $project->descrizione = $request->descrizione;
+        $project->slug = Str::slug($request->titolo);
         $project->save();
 
         return redirect()->route('projects.index')->with('status', 'Project created successfully!');
@@ -49,15 +52,15 @@ class ProjectController extends Controller
 
     public function update(Request $request, $slug)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
 
+        $request->validate([
+            'titolo' => 'required|max:255',
+            'descrizione' => 'required',
+        ]);
         $project = Project::withTrashed()->where('slug', $slug)->firstOrFail();
-        $project->title = $request->title;
-        $project->description = $request->description;
-        $project->slug = Str::slug($request->title);
+        $project->titolo = $request->titolo;
+        $project->descrizione = $request->descrizione;
+        $project->slug = Str::slug($request->titolo);
         $project->save();
 
         return redirect()->route('projects.show', $project->slug)->with('status', 'Project updated successfully!');
@@ -65,9 +68,9 @@ class ProjectController extends Controller
 
     public function destroy($slug)
     {
-        $project = Project::withTrashed()->where('slug', $slug)->firstOrFail();
+        $project = Project::where('slug', $slug)->firstOrFail();
         $project->delete();
-        return redirect()->route('projects.index')->with('status', 'Project deleted successfully!');
+        return redirect()->route('projects.index')->with('status', 'Project cancellato con successo!');
     }
 
     public function restore($slug)
